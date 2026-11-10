@@ -460,9 +460,26 @@ function teamInitial(init){const n=COLLS.reduce((a,c)=>a+init[c].filter(x=>x.typ
   if(!n){if(SYNC.mode==='create'){SYNC.ready=true;setSync('on');pushDiff();toast('Equipo creado con tus datos. Copia el enlace de invitación desde «Datos»')}else{toast('Ese código de equipo no tiene datos. Revísalo o crea el equipo');teamLeave()}return}
   S.plays=[];S.lineups=[];S.videos=[];S.profiles={};S.names={};S.radars={};COLLS.forEach(c=>{SYNC.synced[c]={};init[c].forEach(x=>{if(x.type!=='removed')applyRemote(c,x.id,x.j)})});
   SYNC.ready=true;setSync('on');saveLocal();loadPlay(S.plays[0]||null);softRender();scanWant()}
-async function initTeam(){try{const q=new URLSearchParams(location.search).get('equipo');if(q){localStorage.setItem('fiveiq.team',q);history.replaceState(null,'',location.pathname+location.hash)}SYNC.team=localStorage.getItem('fiveiq.team')||''}catch(e){}
-  if(location.protocol.startsWith('http')){try{const r=await fetch('config.json',{cache:'no-store'});if(r.ok){const c=await r.json();if(c&&(c.mock||(c.firebase&&c.firebase.projectId)))SYNC.cfg=c}}catch(e){}}
-  teamUI();if(SYNC.on())teamConnect('join')}
+async function initTeam(){
+  SYNC.cfg = {
+    firebase: {
+      apiKey: "AIzaSyC_p_BAfjpNNRhRmZRj36a3k-80ISXpIVk",
+      authDomain: "fiveiqcs2.firebaseapp.com",
+      projectId: "fiveiqcs2",
+      storageBucket: "fiveiqcs2.firebasestorage.app",
+      messagingSenderId: "584521833020",
+      appId: "1:584521833020:web:36cd97cd4cc236a6e70139",
+      measurementId: "G-LY1QFTYG6B"
+    }
+  };
+  try{
+    const q=new URLSearchParams(location.search).get('equipo');
+    if(q){localStorage.setItem('fiveiq.team',q);history.replaceState(null,'',location.pathname+location.hash)}
+    SYNC.team=localStorage.getItem('fiveiq.team')||'fiveiq-equipo';
+  }catch(e){}
+  teamUI();
+  if(SYNC.on())teamConnect('create');
+}
 function saveLocal(){try{localStorage.setItem(KEY,SYNC.on()?dehydrate(S):JSON.stringify(S));return true}catch(e){toast('No se pudo guardar: el almacenamiento del navegador está lleno o bloqueado');return false}}
 function save(){const ok=saveLocal();pushDiff();return ok}
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200)}
@@ -744,29 +761,6 @@ try{const l=document.createElement('link');l.rel='icon';l.href=$('.brand img').s
 initBoard();initLu();initVid();initViewer();renderAll();route();
 if(hadLocal)save();
 scanWant();initTeam();
-</script>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyC_p_BAfjpNNRhRmZRj36a3k-80ISXpIVk",
-    authDomain: "fiveiqcs2.firebaseapp.com",
-    projectId: "fiveiqcs2",
-    storageBucket: "fiveiqcs2.firebasestorage.app",
-    messagingSenderId: "584521833020",
-    appId: "1:584521833020:web:36cd97cd4cc236a6e70139",
-    measurementId: "G-LY1QFTYG6B"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
 </script>
 </body>
 </html>

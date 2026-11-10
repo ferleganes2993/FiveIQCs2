@@ -1,11 +1,10 @@
-{
-  "firebase": {
-    "apiKey": "AIzaSyC_p_BAfjpNNRhRmZRj36a3k-80ISXpIVk",
-    "authDomain": "fiveiqcs2.firebaseapp.com",
-    "projectId": "fiveiqcs2",
-    "storageBucket": "fiveiqcs2.firebasestorage.app",
-    "messagingSenderId": "000000000000",
-    "appId": "1:584521833020:web:d1261a7c9cc46ff9e70139",
-    "measurementId": "G-XNRPG3J0YK"
-  }
-}
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyC_p_BAfjpNNRhRmZRj36a3k-80ISXpIVk",
+  authDomain: "fiveiqcs2.firebaseapp.com",
+  projectId: "fiveiqcs2",
+  storageBucket: "fiveiqcs2.firebasestorage.app",
+  messagingSenderId: "584521833020",
+  appId: "1:584521833020:web:d1261a7c9cc46ff9e70139",
+  measurementId: "G-XNRPG3J0YK"
+};

@@ -1339,7 +1339,7 @@ document.addEventListener('click',ev=>{
   else if(a==='prac'){const v=+b.dataset.v;if(PRAC[id]===v)delete PRAC[id];else PRAC[id]=v;try{localStorage.setItem('fiveiq.prac',JSON.stringify(PRAC))}catch(e){}renderLu()}
   else if(a==='poolTog'){const m=b.dataset.m,p=poolOf(),k=p.indexOf(m);if(k>=0){if(p.length===1){toast('Deja al menos un mapa activo');return}p.splice(k,1)}else p.push(m);S.pool=MAPS.filter(x=>p.includes(x));if(S.pool.length===MAPS.length)S.pool=null;save();renderHome();renderLu();renderPlan()}
   else if(a==='mapGo'){const m=b.dataset.m;location.hash='#utilidades';$('#luMapF').value=m;luSel=null;luGrp=null;luSp=null;renderLu();window.scrollTo(0,0)}
-  else if(a==='pMapGo'){const sel=$('#pMap');if(sel.value!==b.dataset.m){sel.value=b.dataset.m;sel.dispatchEvent(new Event('change',{bubbles:true}))}}
+  else if(a==='pMapGo'){const m=b.dataset.m,sel=$('#pMap'),pl=cur.id&&S.plays.find(x=>x.id===cur.id);$('#playFilter').value=m;if(pl&&pl.map!==m){loadPlay(null);sel.value=m;sel.dispatchEvent(new Event('change',{bubbles:true}))}else if(sel.value!==m){sel.value=m;sel.dispatchEvent(new Event('change',{bubbles:true}))}renderPlays()}
   else if(a==='luMapGo'){$('#luMapF').value=b.dataset.m;luSel=null;luGrp=null;luSp=null;renderLu()}
   else if(a==='newsLu')srGoLu(b.dataset.nid);
   else if(a==='newsPlay')srGoPlay(b.dataset.nid);

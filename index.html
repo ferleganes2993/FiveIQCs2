@@ -425,12 +425,14 @@ html[data-fs=l]{font-size:112.5%}html[data-fs=x]{font-size:128%}
 .lu{position:relative}
 
 /* fotos en los botones de mapa, color de mapa solo en el recuadro, animaciones, tema claro */
-#luPool{gap:8px}
-#luPool button{position:relative;isolation:isolate;overflow:hidden;min-width:112px;height:58px;padding:0 16px;display:flex;align-items:flex-end;justify-content:flex-start;border-radius:12px;border:1px solid var(--line);background-color:#190e30;background-size:cover;background-position:50% 50%;color:#fff;font-family:var(--display);font-style:italic;font-weight:800;font-size:1.1rem;text-transform:uppercase;line-height:1;padding-bottom:8px;text-shadow:0 2px 8px rgba(0,0,0,.85);opacity:.8;filter:saturate(.65);transition:opacity .15s,filter .15s,transform .15s}
-#luPool button::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(14,6,32,0) 20%,rgba(14,6,32,.85))}
-#luPool button:hover{opacity:1;filter:none;transform:translateY(-1px)}
-#luPool button[aria-pressed=true]{background-color:#190e30;color:#fff;opacity:1;filter:none;border-color:var(--maca,var(--accent));box-shadow:0 0 0 2px var(--maca,var(--accent)),0 8px 22px -10px var(--maca,var(--accent))}
-@media (max-width:640px){#luPool{flex-wrap:nowrap;overflow-x:auto;padding:2px 2px 6px;scroll-snap-type:x proximity}#luPool button{flex:none;scroll-snap-align:start;height:52px;min-width:104px}}
+/* selector de mapas en Jugadas + ancho */
+@media (min-width:901px){#v-jugadas .bench{max-width:none;grid-template-columns:minmax(0,1fr) clamp(340px,28vw,460px)}}
+:is(#luPool,#pPool){gap:8px}
+:is(#luPool,#pPool) button{position:relative;isolation:isolate;overflow:hidden;min-width:112px;height:58px;padding:0 16px;display:flex;align-items:flex-end;justify-content:flex-start;border-radius:12px;border:1px solid var(--line);background-color:#190e30;background-size:cover;background-position:50% 50%;color:#fff;font-family:var(--display);font-style:italic;font-weight:800;font-size:1.1rem;text-transform:uppercase;line-height:1;padding-bottom:8px;text-shadow:0 2px 8px rgba(0,0,0,.85);opacity:.8;filter:saturate(.65);transition:opacity .15s,filter .15s,transform .15s}
+:is(#luPool,#pPool) button::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(14,6,32,0) 20%,rgba(14,6,32,.85))}
+:is(#luPool,#pPool) button:hover{opacity:1;filter:none;transform:translateY(-1px)}
+:is(#luPool,#pPool) button[aria-pressed=true]{background-color:#190e30;color:#fff;opacity:1;filter:none;border-color:var(--maca,var(--accent));box-shadow:0 0 0 2px var(--maca,var(--accent)),0 8px 22px -10px var(--maca,var(--accent))}
+@media (max-width:640px){:is(#luPool,#pPool){flex-wrap:nowrap;overflow-x:auto;padding:2px 2px 6px;scroll-snap-type:x proximity}:is(#luPool,#pPool) button{flex:none;scroll-snap-align:start;height:52px;min-width:104px}}
 #luBoard,#board{border-color:var(--maca,var(--line))}
 #luBoard.board,#board.board{box-shadow:0 0 0 1px var(--maca,rgba(120,90,190,.25)),0 30px 70px -40px var(--maca,rgba(224,33,143,.55))}
 html[data-fq=light] .ico[style*="e9e6f5"],html[data-fq=light] .ico[style*="cfc6e6"]{color:#6b5f86!important}
@@ -517,6 +519,7 @@ html[data-fq=light] #zoom .vw-h h3,html[data-fq=light] #zoom #vwNotes{color:#f6e
   <div class="head"><div><h2>Jugadas</h2><p class="muted">Elige quién, elige herramienta y pinta sobre el mapa. Cada jugador lleva el color de su camiseta. Con «Seleccionar» añades vídeo, pasos e imágenes a cualquier ficha o granada.</p></div><div class="row"><button class="big" data-act="tplOpen">Plantilla</button><button class="big" data-act="gmOpen">Modo partida</button><button class="primary big" data-act="newPlay">+ Nueva jugada</button></div></div>
   <div class="playbar" id="playBar"><span class="pdot"></span><b id="pbName"></b><span class="muted small" id="pbSub"></span><span class="grow"></span><button type="button" data-act="dupPlay">Duplicar</button><button type="button" data-act="hisOpen" id="hisBtn" hidden>Historial</button><button type="button" data-act="stepStart">▶ Paso a paso</button><button type="button" data-act="expImg">Exportar imagen</button><button type="button" data-act="sharePlay">🔗 Copiar enlace</button><button type="button" class="ghost danger" data-act="delPlay" id="delPlay" hidden>Eliminar</button><button class="primary" type="button" data-act="savePlay">Guardar jugada</button></div>
   <div class="playbar stepbar" id="stepBar" hidden><b>Paso a paso</b><span class="muted small" id="stepTxt"></span><span class="grow"></span><button type="button" data-act="stepGo" data-d="-1">◀ Anterior</button><button type="button" data-act="stepAuto" id="stepPlay">▶ Auto</button><button type="button" data-act="stepGo" data-d="1">Siguiente ▶</button><button type="button" class="ghost" data-act="stepEnd">Salir</button></div>
+  <div class="row seg" id="pPool" aria-label="Cambiar de mapa"></div>
   <div class="bench">
     <div class="board" id="board"><svg viewBox="0 0 1000 1000" id="svg" role="img" aria-label="Pizarra táctica"></svg><div id="peek" class="peek" hidden></div></div>
     <div class="panel">
@@ -1020,7 +1023,8 @@ function inner(list,map,filt){const base=!isImg(S.radars[map])&&BASE_RADAR[map],
   return bg+(list||[]).map((e,i)=>filt&&!vis(e)?'':elSVG(e,i)).join('')}
 const pth=(els,m)=>`<span class="board pth${radClass(m)}"><svg viewBox="0 0 1000 1000" aria-hidden="true">${inner(els||[],m)}</svg></span>`;
 const radClass=m=>MAPS.includes(m)?' rad-'+m:'';
-function draw(){const m=$('#pMap').value;mapTheme();$('#board').className='board t-'+tool+radClass(m);$('#svg').innerHTML=inner(stepN==null?els:els.slice(0,stepN),m,true);renderRoles();$('#namesEditBtn').setAttribute('aria-pressed',namesEdit);$('#namesEditBtn').hidden=!showNames;$('#namesReset').hidden=!namesEdit||!(S.names&&S.names[m]);$('#namesBtn').setAttribute('aria-pressed',showNames);$('#delRadar').hidden=!S.radars[m]}
+function pPoolDraw(){const el=$('#pPool');if(!el)return;const cm=$('#pMap').value,pl=poolOf(),ms=MAPS.slice().sort((a,b)=>pl.includes(b)-pl.includes(a)),sg=ms.join()+'|'+cm;if(el.dataset.sg===sg)return;el.dataset.sg=sg;el.innerHTML=ms.map(m=>`<button type="button" data-act="pMapGo" data-m="${esc(m)}" aria-pressed="${m===cm}" style="background-image:url('${MAPIMG[m]||''}')">${esc(m)}</button>`).join('')}
+function draw(){const m=$('#pMap').value;mapTheme();pPoolDraw();$('#board').className='board t-'+tool+radClass(m);$('#svg').innerHTML=inner(stepN==null?els:els.slice(0,stepN),m,true);renderRoles();$('#namesEditBtn').setAttribute('aria-pressed',namesEdit);$('#namesEditBtn').hidden=!showNames;$('#namesReset').hidden=!namesEdit||!(S.names&&S.names[m]);$('#namesBtn').setAttribute('aria-pressed',showNames);$('#delRadar').hidden=!S.radars[m]}
 const TPL=[
  {n:'Rush A',s:'T',k:'rush',site:'A',d:'Los 5 corren al sitio A, con humo y flash'},
  {n:'Rush B',s:'T',k:'rush',site:'B',d:'Los 5 corren al sitio B, con humo y flash'},
@@ -1336,6 +1340,7 @@ document.addEventListener('click',ev=>{
   else if(a==='prac'){const v=+b.dataset.v;if(PRAC[id]===v)delete PRAC[id];else PRAC[id]=v;try{localStorage.setItem('fiveiq.prac',JSON.stringify(PRAC))}catch(e){}renderLu()}
   else if(a==='poolTog'){const m=b.dataset.m,p=poolOf(),k=p.indexOf(m);if(k>=0){if(p.length===1){toast('Deja al menos un mapa activo');return}p.splice(k,1)}else p.push(m);S.pool=MAPS.filter(x=>p.includes(x));if(S.pool.length===MAPS.length)S.pool=null;save();renderHome();renderLu();renderPlan()}
   else if(a==='mapGo'){const m=b.dataset.m;location.hash='#utilidades';$('#luMapF').value=m;luSel=null;luGrp=null;luSp=null;renderLu();window.scrollTo(0,0)}
+  else if(a==='pMapGo'){const sel=$('#pMap');if(sel.value!==b.dataset.m){sel.value=b.dataset.m;sel.dispatchEvent(new Event('change',{bubbles:true}))}}
   else if(a==='luMapGo'){$('#luMapF').value=b.dataset.m;luSel=null;luGrp=null;luSp=null;renderLu()}
   else if(a==='newsLu')srGoLu(b.dataset.nid);
   else if(a==='newsPlay')srGoPlay(b.dataset.nid);

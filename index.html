@@ -97,6 +97,8 @@ main{padding-block:28px 64px}
 .board>svg{display:block;width:100%;height:100%}
 #board svg{touch-action:none;cursor:crosshair}
 #board.t-sel svg .el{cursor:pointer} #board.t-mover svg .el{cursor:grab} #board.t-borrar svg .el{cursor:not-allowed}
+.pls{display:none;align-content:start;gap:10px;position:sticky;top:84px}.pls h3{margin:0;font-size:1rem}.pls .lurows{max-height:min(74vh,760px)}.pls .lurows button{min-width:0}.pls .lurows button span{overflow:hidden;text-overflow:ellipsis;max-width:48%}
+@media (min-width:1100px){#v-jugadas .bench{max-width:none;grid-template-columns:minmax(220px,280px) minmax(0,1fr) 340px}#v-jugadas .pls{display:grid}}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:16px;min-width:0}
 .group{display:grid;gap:8px}
 .group>span{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
@@ -520,6 +522,7 @@ html[data-fq=light] #zoom .vw-h h3,html[data-fq=light] #zoom #vwNotes{color:#f6e
   <div class="playbar stepbar" id="stepBar" hidden><b>Paso a paso</b><span class="muted small" id="stepTxt"></span><span class="grow"></span><button type="button" data-act="stepGo" data-d="-1">◀ Anterior</button><button type="button" data-act="stepAuto" id="stepPlay">▶ Auto</button><button type="button" data-act="stepGo" data-d="1">Siguiente ▶</button><button type="button" class="ghost" data-act="stepEnd">Salir</button></div>
   <div class="row seg" id="pPool" aria-label="Cambiar de mapa"></div>
   <div class="bench">
+    <aside class="panel pls" id="pList" aria-label="Jugadas guardadas"></aside>
     <div class="board" id="board"><svg viewBox="0 0 1000 1000" id="svg" role="img" aria-label="Pizarra táctica"></svg><div id="peek" class="peek" hidden></div></div>
     <div class="panel">
       <div class="group"><span>Quién</span><div class="row who" id="who"></div></div>
@@ -1096,7 +1099,9 @@ function renderPlays(){renderPlan();const f=$('#playFilter').value,fs=$('#pfSide
   const list=S.plays.filter(p=>(!f||p.map===f)&&(!fs||p.side===fs)&&(!ft||p.type===ft)&&(!fz||p.site===fz)&&(!fb||p.buy===fb)&&(!pfFav||FAV.has(p.id)));
   $('#pfFav').setAttribute('aria-pressed',pfFav);
   $('#playList').innerHTML=list.map(p=>{const rq=(p.req||[]).filter(Boolean).length,idl=new Set((p.els||[]).filter(e=>e.t==='player'&&e.p<5).map(e=>e.p)).size,ch=[p.map,p.side,p.type,p.site&&'Sitio '+p.site,p.buy,rq&&'Mín. '+rq+' · ideal '+Math.max(rq,idl)].filter(Boolean);
-    return `<div class="play" data-id="${esc(p.id)}" aria-current="${p.id===cur.id}"><button class="open" data-act="loadPlay"><div class="board${radClass(p.map)}"><svg viewBox="0 0 1000 1000" aria-hidden="true">${inner(p.els,p.map)}</svg></div><div class="meta"><h3>${esc(p.name)}</h3><div class="row">${ch.map(c=>`<span class="chip">${ico(c,13)}${esc(c)}</span>`).join('')}</div>${byB(p)?`<div class="row">${byB(p)}</div>`:''}${p.notes?`<p class="small muted">${esc(p.notes)}</p>`:''}</div></button><button class="fav" data-act="fav" aria-pressed="${FAV.has(p.id)}" aria-label="Marcar ${esc(p.name)} como favorita">♥</button></div>`}).join('')||`<div class="empty">No hay jugadas con este filtro. Dibuja una en la pizarra y pulsa «Guardar jugada».</div>`}
+    return `<div class="play" data-id="${esc(p.id)}" aria-current="${p.id===cur.id}"><button class="open" data-act="loadPlay"><div class="board${radClass(p.map)}"><svg viewBox="0 0 1000 1000" aria-hidden="true">${inner(p.els,p.map)}</svg></div><div class="meta"><h3>${esc(p.name)}</h3><div class="row">${ch.map(c=>`<span class="chip">${ico(c,13)}${esc(c)}</span>`).join('')}</div>${byB(p)?`<div class="row">${byB(p)}</div>`:''}${p.notes?`<p class="small muted">${esc(p.notes)}</p>`:''}</div></button><button class="fav" data-act="fav" aria-pressed="${FAV.has(p.id)}" aria-label="Marcar ${esc(p.name)} como favorita">♥</button></div>`}).join('')||`<div class="empty">No hay jugadas con este filtro. Dibuja una en la pizarra y pulsa «Guardar jugada».</div>`;
+  {const pl=$('#pList');if(pl)pl.innerHTML=`<h3>Jugadas guardadas <span class="muted small">${list.length}</span></h3><div class="lurows">${list.map(p=>`<button type="button" data-id="${esc(p.id)}" data-act="loadPlayQ" aria-pressed="${p.id===cur.id}" title="${esc(p.name)}"><b>${esc(p.name)}</b><span>${esc([p.side,p.type].filter(Boolean).join(' · '))}</span></button>`).join('')||'<p class="muted small">No hay jugadas con este filtro.</p>'}</div>`}
+}
 
 let refSide='';
 function stratType(t){const r=[[/execut/i,'Ejecución'],[/split/i,'Split'],[/default/i,'Default'],[/rush/i,'Rush'],[/pistol/i,'Pistola'],[/eco/i,'Eco'],[/retake/i,'Retake'],[/post plant/i,'Post-plant'],[/hold|defense|delay|support|aggressive/i,'Defensa'],[/control|pressure|lurk|contact/i,'Control'],[/tactic|strat/i,'Estrategia']];for(const x of r)if(x[0].test(t))return x[1];return 'Guía'}
@@ -1312,6 +1317,7 @@ document.addEventListener('click',ev=>{
   else if(a==='delRadar')arm(b,()=>{delete S.radars[$('#pMap').value];save();radarCss();draw();renderPlays()});
   else if(a==='newPlay'){loadPlay(null);setTool('sel');$('#board').scrollIntoView({behavior:'smooth',block:'center'});toast('Pizarra en blanco: elige quién y una herramienta, pinta y pulsa Guardar jugada')}
   else if(a==='savePlay'){const f=$('#playForm');if(!$('#pName').value.trim()){$('#pName').scrollIntoView({behavior:'smooth',block:'center'});$('#pName').focus();toast('Ponle un nombre a la jugada para guardarla');return}f.requestSubmit()}
+  else if(a==='loadPlayQ'){loadPlay(S.plays.find(p=>p.id===id))}
   else if(a==='loadPlay'){loadPlay(S.plays.find(p=>p.id===id));$('#board').scrollIntoView({block:'center'})}
   else if(a==='delPlay')arm(b,()=>{trashAdd('plays',S.plays.find(p=>p.id===cur.id));S.plays=S.plays.filter(p=>p.id!==cur.id);save();loadPlay(null);renderHome();toast('Jugada eliminada. Está en la papelera (Datos)')});
   else if(a==='dupPlay'){if(!els.length&&!$('#pName').value.trim()){toast('Abre o dibuja una jugada para duplicarla');return}

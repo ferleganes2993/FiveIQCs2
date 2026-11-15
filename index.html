@@ -451,6 +451,8 @@ html[data-fs=l]{font-size:112.5%}html[data-fs=x]{font-size:128%}
 html[data-fq=light] .ico[style*="e9e6f5"],html[data-fq=light] .ico[style*="cfc6e6"]{color:#6b5f86!important}
 html[data-fq=light] #zoom .vw-h h3,html[data-fq=light] #zoom #vwNotes{color:#f6eedc}
 @media (prefers-reduced-motion:no-preference){
+  @keyframes vin{from{opacity:0;transform:translateY(12px)}}
+  .view.vin{animation:vin .34s cubic-bezier(.2,.7,.2,1) both}
   @keyframes cin{from{opacity:0;transform:translateY(14px) scale(.98)}}
   .stg :is(.cards,#playList,#luPool)>*{animation:cin .42s cubic-bezier(.2,.7,.2,1) both}
   .stg :is(.cards,#playList,#luPool)>:nth-child(2){animation-delay:.04s}.stg :is(.cards,#playList,#luPool)>:nth-child(3){animation-delay:.08s}.stg :is(.cards,#playList,#luPool)>:nth-child(4){animation-delay:.12s}.stg :is(.cards,#playList,#luPool)>:nth-child(5){animation-delay:.16s}.stg :is(.cards,#playList,#luPool)>:nth-child(6){animation-delay:.2s}.stg :is(.cards,#playList,#luPool)>:nth-child(7){animation-delay:.24s}.stg :is(.cards,#playList,#luPool)>:nth-child(8){animation-delay:.28s}.stg :is(.cards,#playList,#luPool)>:nth-child(n+9){animation-delay:.32s}
@@ -1337,7 +1339,7 @@ let RV;function revealInit(){if(!('IntersectionObserver' in window)){$$('.rv').f
 document.addEventListener('pointermove',e=>{const c=e.target.closest&&e.target.closest('.door,.lu,.vid,.play,.roster li');if(c){const r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')}},{passive:true});
 addEventListener('scroll',()=>document.querySelector('.top').classList.toggle('sc',scrollY>8),{passive:true});
 const VIEWS=['inicio','jugadas','utilidades','videos'];
-let SHARED=null;function route(){let h=location.hash.slice(1);const sm=h.match(/^([uj])\/([\w-]+)$/);if(sm){SHARED={t:sm[1],id:sm[2]};h=sm[1]==='u'?'utilidades':'jugadas'}const v=VIEWS.includes(h)?h:'inicio';VIEWS.forEach(x=>$('#v-'+x).hidden=x!==v);$$('.tabs a,.bnav a').forEach(a=>a.getAttribute('href')==='#'+v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));window.scrollTo(0,0);revealInit();mapTheme();stagger($('#v-'+v));if(SHARED)shareOpen()}
+let SHARED=null,curV=null;function route(){let h=location.hash.slice(1);const sm=h.match(/^([uj])\/([\w-]+)$/);if(sm){SHARED={t:sm[1],id:sm[2]};h=sm[1]==='u'?'utilidades':'jugadas'}const v=VIEWS.includes(h)?h:'inicio';VIEWS.forEach(x=>$('#v-'+x).hidden=x!==v);$$('.tabs a,.bnav a').forEach(a=>a.getAttribute('href')==='#'+v?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));window.scrollTo(0,0);if(curV!==v){const el=$('#v-'+v);el.classList.remove('vin');void el.offsetWidth;el.classList.add('vin');el.addEventListener('animationend',e=>{if(e.target===el)el.classList.remove('vin')},{once:true})}curV=v;revealInit();mapTheme();stagger($('#v-'+v));if(SHARED)shareOpen()}
 function renderAll(){radarCss();renderHome();loadPlay(S.plays[0]||null);renderRefs();renderLu();renderVid()}
 async function syncTeam(silent){try{const r=await fetch('data.json',{cache:'no-store'});if(!r.ok)throw 0;S=clean(await r.json());save();renderAll();if(!silent)toast('Datos del equipo cargados');return true}catch(e){if(!silent)toast('No hay data.json junto a la web todavía');return false}}
 
